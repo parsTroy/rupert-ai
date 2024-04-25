@@ -1,37 +1,72 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useChat } from "ai/react";
+import { useEffect, useRef } from "react";
 
 export default function MyComponent() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const chatParent = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const domNode = chatParent.current;
+    if (domNode) {
+      domNode.scrollTop = domNode.scrollHeight;
+    }
+  });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <ul className="flex flex-col items-center justify-center w-full">
-        {messages.map((m, index) => (
-          <li key={index} className="test-white p-2 my-2 rounded-md">
-            {m.role === "user" ? "User: " : "AI: "}
-            {m.content}
-          </li>
-        ))}
-      </ul>
+    <main className="flex flex-col w-full h-screen max-h-dvh bg-background">
+      <header className="p-4 border-b w-full max-w-3xl mx-auto">
+        <h1 className="text-2xl font-bold">Rupert AI</h1>
+      </header>
 
-      <form onSubmit={handleSubmit} className="space-x-4">
-        <label className="mr-2">
-          Ask away...
-          <input
+      <section className="p-4">
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full max-w-3xl mx-auto items-center"
+        >
+          <Input
+            className="flex-1 min-h-[40px] "
+            placeholder="Type your question here..."
+            type="text"
             value={input}
             onChange={handleInputChange}
-            className="rounded-md text-black shadow-sm p-2 ml-2 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
-        </label>
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          <Button className="ml-2" type="submit">
+            Submit
+          </Button>
+        </form>
+      </section>
+
+      <section className="container px-0 pb-10 flex flex-col flex-grow gap-4 mx-auto max-w-3xl">
+        <ul
+          ref={chatParent}
+          className="h-1 p-4 flex-grow bg-muted/50 rounded-lg overflow-y-auto flex flex-col gap-4"
         >
-          Send
-        </button>
-      </form>
-    </div>
+          {messages.map((m, index) => (
+            <>
+              {m.role === "user" ? (
+                <li key={index} className="flex flex-row">
+                  <div className="rounded-xl p-4 bg-background shadow-md flex">
+                    <p className="text-primary">{m.content}</p>
+                  </div>
+                </li>
+              ) : (
+                <li key={index} className="flex flex-row-reverse">
+                  <div className="rounded-xl p-4 bg-background shadow-md flex w-3/4">
+                    <p className="text-primary">
+                      <span className="font-bold">Answer: </span>
+                      {m.content}
+                    </p>
+                  </div>
+                </li>
+              )}
+            </>
+          ))}
+        </ul>
+      </section>
+    </main>
   );
 }
