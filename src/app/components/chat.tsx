@@ -9,6 +9,8 @@ export default function MyComponent() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   const chatParent = useRef<HTMLUListElement>(null);
 
+  // ISSUE WITH SERVER FROM OPEN-API
+
   useEffect(() => {
     const domNode = chatParent.current;
     if (domNode) {
